@@ -1,15 +1,15 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'omniauth-ags/version'
+require 'omniauth-timberlake/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "omniauth-ags"
-  spec.version       = Omniauth::Ags::VERSION
-  spec.authors       = ["Timm Liu"]
-  spec.email         = ["tliu@blueskybroadcast.com"]
-  spec.summary       = %q{AGS SSO}
-  spec.description   = %q{AGS SSO}
+  spec.name          = "omniauth-timberlake"
+  spec.version       = Omniauth::Timberlake::VERSION
+  spec.authors       = ["Dave Sloan"]
+  spec.email         = ["dsloan@blueskybroadcast.com"]
+  spec.summary       = %q{TIMBERLAKE SSO}
+  spec.description   = %q{TIMBERLAKE SSO}
   spec.homepage      = ""
   spec.license       = "MIT"
 

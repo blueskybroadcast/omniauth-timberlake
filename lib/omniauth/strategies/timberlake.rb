@@ -10,7 +10,7 @@ module OmniAuth
       option :client_options, {
         authorize_url: 'http://staging.membershipsoftware.org/login.asp',
         api_base_url: 'https://secure005.membershipsoftware.org/stagingsecure',
-        user_info_url: '/api/getmemberinfo',
+        user_info_url: '/api/GetBasicMemberInfo',
         validate_url: '/api/ValidateAuthenticationToken',
         security_key: 'MUST BE SET'
       }
@@ -19,13 +19,12 @@ module OmniAuth
 
       info do
         {
+          id: raw_info[:id],
           first_name: raw_info[:first_name],
           last_name: raw_info[:last_name],
           email: raw_info[:email],
-          member_id: uid,
           member_type: raw_info[:member_type],
-          is_active: raw_info[:is_active],
-          is_member: raw_info[:is_member]
+          expiration_date: raw_info[:expiration_date]
         }
       end
 
@@ -87,7 +86,7 @@ module OmniAuth
           { :params =>
             {
               "securityKey" => security_key,
-              "memberKey" => validate_auth_token
+              "ContactID" => @contact_id = validate_auth_token
             }
           }
         )
@@ -96,13 +95,12 @@ module OmniAuth
 
         if response.code == 200
           info = {
-            id: parsed_response['GetMemberInfo']['MemberID'],
-            first_name: parsed_response['GetMemberInfo']['FirstName'],
-            last_name: parsed_response['GetMemberInfo']['LastName'],
-            email: parsed_response['GetMemberInfo']['EmailAddress'],
-            member_type: parsed_response['GetMemberInfo']['MemberType'],
-            is_active: parsed_response['GetMemberInfo']['IsActive'],
-            is_member: parsed_response['GetMemberInfo']['IsMember']
+            id: @contact_id,
+            first_name: parsed_response['GetBasicMemberInfo']['FirstName'],
+            last_name: parsed_response['GetBasicMemberInfo']['LastName'],
+            email: parsed_response['GetBasicMemberInfo']['EmailAddress'],
+            member_type: parsed_response['GetBasicMemberInfo']['MemberType'],
+            expiration_date: parsed_response['GetBasicMemberInfo']['ExpirationDate']
           }
         else
           nil

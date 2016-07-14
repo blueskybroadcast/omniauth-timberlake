@@ -8,10 +8,10 @@ module OmniAuth
       option :name, 'timberlake'
 
       option :client_options, {
-        authorize_url: 'http://staging.membershipsoftware.org/login.asp',
+        authorize_url: 'https://staging.membershipsoftware.org/login.asp',
         api_base_url: 'https://secure005.membershipsoftware.org/stagingsecure',
-        user_info_url: '/api/GetBasicMemberInfo',
-        validate_url: '/api/ValidateAuthenticationToken',
+        user_info_url: 'api/GetBasicMemberInfo/',
+        validate_url: 'api/ValidateAuthenticationToken/',
         security_key: 'MUST BE SET'
       }
 
@@ -63,18 +63,11 @@ module OmniAuth
       end
 
       def validate_auth_token
-        response = RestClient.get(validate_auth_url,
-          { :params =>
-            {
-              "token" => access_token[:token],
-              "securityKey" => security_key
-            }
-          }
-        )
-
+        Rails.logger.error("\n==========================================\n\n #{validate_auth_url} \n\n==========================================\n")
+        response = RestClient.get(validate_auth_url)
         parsed_response = MultiXml.parse(response)
-
         if response.code == 200
+          @contact_id = parsed_response['ValidateAuthenticationToken']['ValidateAuthenticationTokenResult']
           parsed_response['ValidateAuthenticationToken']['ValidateAuthenticationTokenResult']
         else
           nil
@@ -82,17 +75,9 @@ module OmniAuth
       end
 
       def get_user_info
-        response = RestClient.get(user_info_url,
-          { :params =>
-            {
-              "securityKey" => security_key,
-              "ContactID" => @contact_id = validate_auth_token
-            }
-          }
-        )
-
+        Rails.logger.error("\n==========================================\n\n #{user_info_url} \n\n==========================================\n")
+        response = RestClient.get(user_info_url)
         parsed_response = MultiXml.parse(response)
-
         if response.code == 200
           info = {
             id: @contact_id,
@@ -123,11 +108,11 @@ module OmniAuth
       end
 
       def user_info_url
-        "#{options.client_options.api_base_url}#{options.client_options.user_info_url}"
+        "#{options.client_options.api_base_url}#{options.client_options.user_info_url}?securitykey=#{security_key}&contactID=#{validate_auth_token}"
       end
 
       def validate_auth_url
-        "#{options.client_options.api_base_url}#{options.client_options.validate_url}"
+        "#{options.client_options.api_base_url}#{options.client_options.validate_url}?securitykey=#{security_key}&token=#{access_token[:token]}"
       end
     end
   end

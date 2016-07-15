@@ -108,11 +108,19 @@ module OmniAuth
       end
 
       def user_info_url
-        "#{options.client_options.api_base_url}#{options.client_options.user_info_url}?securitykey=#{security_key}&contactID=#{validate_auth_token}"
+        base_url = options.client_options.api_base_url
+        base_url += '/' if options.client_options.api_base_url[-1] != '/'
+        user_url = options.client_options.user_info_url
+        user_url += '/' if options.client_options.user_info_url[-1] != '/'
+        "#{base_url}#{user_url}?securitykey=#{security_key}&contactID=#{validate_auth_token}"
       end
 
       def validate_auth_url
-        "#{options.client_options.api_base_url}#{options.client_options.validate_url}?securitykey=#{security_key}&token=#{access_token[:token]}"
+        base_url = options.client_options.api_base_url
+        base_url += '/' if options.client_options.api_base_url[-1] != '/'
+        validate_url = options.client_options.validate_url
+        validate_url += '/' if options.client_options.validate_url[-1] != '/'
+        "#{base_url}#{validate_url}?securitykey=#{security_key}&token=#{access_token[:token]}"
       end
     end
   end

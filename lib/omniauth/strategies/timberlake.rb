@@ -39,7 +39,8 @@ module OmniAuth
       end
 
       def callback_phase
-        account = Account.find_by(slug: account_slug)
+        slug = request.params['slug']
+        account = Account.find_by(slug: slug)
         @app_event = account.app_events.where(id: options.app_options.app_event_id).first_or_create(activity_type: 'sso')
 
         self.access_token = {

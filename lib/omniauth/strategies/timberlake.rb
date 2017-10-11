@@ -70,7 +70,7 @@ module OmniAuth
 
       def validate_auth_token
         Rails.logger.error("\n==========================================\n\n #{validate_auth_url} \n\n==========================================\n")
-        request_log_text = "#{provider_name} Validate Auth Token Request:\nGET #{validate_auth_url}"
+        request_log_text = "#{provider_name} Validate Auth Token Request:\nGET #{filtered_url(validate_auth_url)}"
         @app_event.logs.create(level: 'info', text: request_log_text)
 
         begin
@@ -95,7 +95,7 @@ module OmniAuth
 
       def get_user_info
         Rails.logger.error("\n==========================================\n\n #{user_info_url} \n\n==========================================\n")
-        request_log_text = "#{provider_name} Get Basic Member Info Request:\nGET #{user_info_url}"
+        request_log_text = "#{provider_name} Get Basic Member Info Request:\nGET #{filtered_url(user_info_url)}"
         @app_event.logs.create(level: 'info', text: request_log_text)
 
         begin
@@ -178,6 +178,11 @@ module OmniAuth
 
       def provider_name
         options.name
+      end
+
+      def filtered_url(url)
+        url.gsub(/\?securitykey=.*&/, "?securitykey=#{Provider::SECURITY_MASK}")
+           .gsub(/&token=.*/, "&token=#{Provider::SECURITY_MASK}")
       end
     end
   end

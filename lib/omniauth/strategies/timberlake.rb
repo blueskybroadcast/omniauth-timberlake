@@ -14,7 +14,8 @@ module OmniAuth
         api_base_url: 'https://secure005.membershipsoftware.org/stagingsecure',
         user_info_url: 'api/GetBasicMemberInfo/',
         validate_url: 'api/ValidateAuthenticationToken/',
-        security_key: 'MUST BE SET'
+        security_key: 'MUST BE SET',
+        custom_field_keys: [],
       }
 
       uid { raw_info[:id] }
@@ -26,7 +27,8 @@ module OmniAuth
           last_name: raw_info[:last_name],
           email: raw_info[:email],
           member_type: raw_info[:member_type],
-          expiration_date: raw_info[:expiration_date]
+          expiration_date: raw_info[:expiration_date],
+          custom_fields_data: raw_info[:custom_fields_data]
         }
       end
 
@@ -116,7 +118,8 @@ module OmniAuth
             last_name: parsed_response['GetBasicMemberInfo']['LastName'],
             email: parsed_response['GetBasicMemberInfo']['EmailAddress'],
             member_type: parsed_response['GetBasicMemberInfo']['MemberType'],
-            expiration_date: parsed_response['GetBasicMemberInfo']['ExpirationDate']
+            expiration_date: parsed_response['GetBasicMemberInfo']['ExpirationDate'],
+            custom_fields_data: custom_fields_data(parsed_response)
           }
 
           @app_event.update(raw_data: {
@@ -136,6 +139,15 @@ module OmniAuth
       end
 
       private
+
+      def custom_fields_data(parsed_response)
+        custom_field_keys = options.client_options.custom_field_keys.to_a
+
+        parsed_response.dig('GetBasicMemberInfo').each_with_object({}) do |(key, value), memo|
+          next unless custom_field_keys.include?(key)
+          memo[key.downcase] = value
+        end
+      end
 
       def create_response_error_log(response, error_message = '')
         error_log_text = "#{provider_name} Validate Auth Token Response Error #{error_message}(code: #{response&.code}):\n#{response}"

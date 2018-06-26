@@ -15,7 +15,7 @@ module OmniAuth
         user_info_url: 'api/GetBasicMemberInfo/',
         validate_url: 'api/ValidateAuthenticationToken/',
         security_key: 'MUST BE SET',
-        custom_field_keys: [],
+        custom_field_keys: []
       }
 
       uid { raw_info[:id] }
